@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/stfavicon.ico') }}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href= "{{ url_for('unique_student') }}" class="active">
+                <span class="material-icons-sharp">home</span>
+                <h3>Home</h3>
+            </a>
+            <a href="{{ url_for('analysis') }}">
+                <span class="material-icons-sharp">assessment</span>
+                <h3>Analysis</h3>
+            </a>
+        </div>
+        <div id="profile-btn">
+            <span class="material-icons-sharp">person</span>
+        </div>
+        <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+        </div>
+    </header>
+    <div class="container">
+        <aside>
+            <div class="profile">
+                <div class="top">
+                    <div class="profile-photo">
+                        <img src="{{ url_for('static', filename='img/woman.png') }}" alt="">
+                    </div>
+                    <div class="info">
+                        <p>Hey, <b>Vidhi</b> </p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Unique students count -->
+        <main>
+            <h1>Students</h1>
+            <div class="subjects">
+                <div class="eg">
+                    <a href="https://www.flaticon.com/free-icons/donut-chart">
+                        <img src="{{ url_for('static', filename='img/donut-chart.png') }}" alt="Icon">
+                    </a>
+                    <h2>TOTAL STUDENTS</h2>
+                    <h3>{{ unique_student_count }}</h3>
+                </div>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>In College</h4>
+                        <h4>{{ in_college_count }}</h4>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Not Mentioned</h4>
+                        <h4>{{ not_mentioned_count }}</h4>
+                    </div>
+                    <img src="{{ url_for('static', filename='img/donut_chart.png') }}" alt="Icon"  style="width: 250%; height: 100%;">
+                </div>
+                
+                
+            </div>
+            <div class="clg">
+                <h2>TOP 5 COLLEGE</h2>
+                <ul>
+                    {% for college, count in top_5_college.items() %}
+                        <li>{{ college}} : {{ count }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>  
+        </main>
+
+        <div class="right">
+            <div class="announcement">
+                <img src="{{ url_for('static', filename='img/yeardist.png') }}" alt="Icon">
+            </div>
+            <div class="announcement">
+                <h2>Graduation Year Distribution</h2>
+                <ul>
+                    {% for year, count in graduation_year.items() %}
+                        <li>{{ year }}: {{ count }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="announcement">
+                <h2>Python Experience</h2>
+                <ul>
+                    {% for experience, count in python_experience.items() %}
+                        <li>{{ experience }} months: {{ count }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+
+        </div>
+        
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

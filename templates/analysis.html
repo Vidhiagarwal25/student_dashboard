@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/stfavicon.ico') }}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href= "{{ url_for('unique_student') }}" class="active">
+                <span class="material-icons-sharp">home</span>
+                <h3>Home</h3>
+            </a>
+            <a href="{{ url_for('analysis') }}">
+                <span class="material-icons-sharp">assessment</span>
+                <h3>Analysis</h3>
+            </a>
+        </div>
+        <div id="profile-btn">
+            <span class="material-icons-sharp">person</span>
+        </div>
+        <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+        </div>
+    </header>
+    
+    <main>
+        <div class="analysis-grid">
+            <div class="grid-item avg">
+                <h2>Average CGPA</h2>
+                <h3>{{ average_cgpa }}</h3>
+            </div>
+            <div class="grid-item city-gpa" id="city-gpa">
+                <h2>CGPA by Cities</h2>
+                <button onclick="openCityGPA()">View CGPA by Cities</button>
+            </div>
+            <div class="grid-item fi">
+                <h2>Average Family Income</h2>
+                <h3>{{ average_family_income }}</h3>
+                <button class="open-popup-btn">Show Correlation</button>
+            </div>
+            <div class="grid-item exp salary">
+                <h3>Expected Salary Variation Based on Factors</h3>
+                <button class="open-var-btn">Variation</button>
+            </div>
+            <div class="grid-item event-status" id="event-status">
+                <h2>Event Attendee Status</h2>
+                <button onclick="openEventStatus()">View Event Status</button>
+            </div>
+            <div class="grid-item avg">
+                <h2>Leadership skills</h2>
+                <h3>{{ leadership_skills }}</h3>
+            </div>
+            <div class="grid-item avg">
+                <h2> Leadership Skills and  Expected Salary </h>
+                <h3>{{ leadership_correlation }}</h3>
+            </div>
+            <div class="grid-item avg">
+                <h2>Graduating 2024</h2>
+                <h3>1511</h3>
+            </div>
+            <div class="grid-item avg">
+                <h2>Data Science Event Attendance</h2>
+                <h3>306</h3>
+            </div>
+            <div class="grid-item avg">
+                <h2>Promotion Channel Effectiveness:</h2>
+                <h3>Whatsapp: 1067</h3>
+            </div>
+            <div class="grid-item avg">
+                <h2> Average High Salary Expections (Lac)</h2>
+                <h3>18.70</h3>
+            </div>
+        </div>
+        
+        <!-- Modal popup for CGPA by Cities -->
+        <div id="cityModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeCityGPA()">&times;</span>
+                <h2>CGPA by Cities</h2>
+                <ul id="cityList">
+                    {% for city, count in average_cgpa_city.items() %}
+                        <li>{{ city }}: {{ count }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="popup" id="imagePopup">
+            <div class="popup-content">
+                <span class="close-btn">&times;</span>
+                <img src="{{ url_for('static', filename='img/fiplot.png') }}" alt="Image">
+            </div>
+        </div>
+        <div class="popup" id="VariationPopup">
+            <div class="popup-content">
+                <span class="close-var-btn">&times;</span>
+                <img src="{{ url_for('static', filename='img/expsalary.png') }}" alt="Image">
+            </div>
+        </div>
+        <div id="eventModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEventStatus()">&times;</span>
+                <h2>Event Attendee Status</h2>
+                <div id="eventStatusTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                {% for status in event_attending_status.columns %}
+                                    <th>{{ status }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event, statuses in event_attending_status.iterrows() %}
+                                <tr>
+                                    <td>{{ event }}</td>
+                                    {% for status, count in statuses.items() %}
+                                        <td>{{ count }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Get the modal
+    var modal = document.getElementById("cityModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("city-gpa");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    function openCityGPA() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    function closeCityGPA() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var popup = document.getElementById("imagePopup");
+        var btn = document.querySelector(".open-popup-btn");
+        var closeBtn = document.querySelector(".close-btn");
+
+        // When the user clicks the button, open the popup
+        btn.onclick = function() {
+            popup.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the popup
+        closeBtn.onclick = function() {
+            popup.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the popup, close it
+        window.onclick = function(event) {
+            if (event.target == popup) {
+                popup.style.display = "none";
+            }
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var popup = document.getElementById("VariationPopup");
+        var btn = document.querySelector(".open-var-btn");
+        var closeBtn = document.querySelector(".close-var-btn");
+
+        // When the user clicks the button, open the popup
+        btn.onclick = function() {
+            popup.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the popup
+        closeBtn.onclick = function() {
+            popup.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the popup, close it
+        window.onclick = function(event) {
+            if (event.target == popup) {
+                popup.style.display = "none";
+            }
+        }
+    });
+
+    // modal.js
+
+function openCityGPA() {
+    document.getElementById('cityModal').style.display = 'block';
+}
+
+function closeCityGPA() {
+    document.getElementById('cityModal').style.display = 'none';
+}
+
+function openEventStatus() {
+    document.getElementById('eventModal').style.display = 'block';
+}
+
+function closeEventStatus() {
+    document.getElementById('eventModal').style.display = 'none';
+}
+
+// Close the modal when the user clicks outside of it
+window.onclick = function(event) {
+    if (event.target == document.getElementById('cityModal')) {
+        document.getElementById('cityModal').style.display = 'none';
+    }
+    if (event.target == document.getElementById('eventModal')) {
+        document.getElementById('eventModal').style.display = 'none';
+    }
+}
+
+
+
+
+    </script>
+</body>
+</html>
